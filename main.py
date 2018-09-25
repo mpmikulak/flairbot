@@ -73,7 +73,7 @@ def main():
     # Manage the reddit instance            
     for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments():
         if comment.body in KEYWORDS:
-            poster = comment.submission.author
+            poster = comment.submission.author.name
             add_rep(table, poster)
             reddit.subreddit(SUBREDDIT_NAME).flair.set(poster, "{} {}".format(FILLER, get_rep(table, poster)))
             
