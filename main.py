@@ -36,23 +36,47 @@ def authenticate():
         print("User is in edit mode.")
     return reddit
 
-def main():
-    # Authenticate with Reddit and obtain a reddit instance
-    reddit = authenticate()
-
+# Connect to the database and return a table
+def obtain_table():
     # Connect to the database
     try:
         db = dataset.connect('sqlite:///rep.db')
     except Exception:
         print("There was a problem connecting to the database.")
-    table = db['rep']
-    
+    return db['rep']
+
+# Obtain current value of poster reputation
+def get_rep(table, poster):
+    rep = table.find(name=poster)
+    if rep is None:
+        return 0
+    return int(rep['rep'])
+
+
+# Add reputation to the poster in the database
+def add_rep(table, poster):
+    table.insert(dict(name=poster, rep = get_rep(table, poster) + 1))
+
+def main():
+    # Authenticate with Reddit and obtain a reddit instance
+    reddit = authenticate()
+
+    # Obtain a table in the database
+    table = obtain_table()
+
+# obtain name of poster
+# check if poster is in database
+# if not, create entry
+# if yes, update reputation with plus one
+# update the reddit flare with filler text and updated reputation
+
     # Manage the reddit instance            
     for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments():
         if comment.body in KEYWORDS:
-
-if __name__ == "__main__":
-    main()
+            poster = comment.submission.author
+            add_rep(table, poster)
+            reddit.subreddit(SUBREDDIT_NAME).flair.set(poster, "{} {}".format(FILLER, get_rep(table, poster)))
+            
 
 # def getRep(username):
 #   rep = table.find(name=username)
@@ -69,5 +93,8 @@ if __name__ == "__main__":
 #       op = comment.submission.author
 #       reddit.subreddit('ClashRoyaleTrade').flair.set(op, getRep(op))
 #       comment.reply("{}'s rep has been updated".format(op))
+
+if __name__ == "__main__":
+    main()
 
 
