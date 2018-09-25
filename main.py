@@ -12,10 +12,15 @@ PASSWORD = '' # Required to be in edit mode
 
 # SubReddit info
 SUBREDDIT_NAME = 'ClashRoyaleTrade'
-KEYWORDS = ('')
 
-def main():
-    # Authenticate with Reddit and obtain a reddit instance
+# Keywords that will increase reputation
+KEYWORDS = ('+1')
+
+# Filler text that will appear with the reputation number
+FILLER = 'Reputation'
+
+# Authentication function
+def authenticate():
     print("Authenticating...")
     try:
         reddit = praw.Reddit(client_id=CLIENT_ID,
@@ -29,18 +34,25 @@ def main():
         print("User is read only.")         
     else:
         print("User is in edit mode.")
-                
+    return reddit
+
+def main():
+    # Authenticate with Reddit and obtain a reddit instance
+    reddit = authenticate()
+
+    # Connect to the database
+    try:
+        db = dataset.connect('sqlite:///rep.db')
+    except Exception:
+        print("There was a problem connecting to the database.")
+    table = db['rep']
+    
     # Manage the reddit instance            
     for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments():
-        print(comment.selftext)
-        # print("{}: {} \n".format(comment.author, comment.body))
+        if comment.body in KEYWORDS:
 
 if __name__ == "__main__":
     main()
-
-    
-# db = dataset.connect('sqlite:///rep.db')
-# table = db['rep']
 
 # def getRep(username):
 #   rep = table.find(name=username)
