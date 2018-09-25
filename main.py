@@ -2,6 +2,7 @@
 
 import praw
 import dataset
+import datetime
 
 # OAuth credentials
 CLIENT_ID = 'u2s7QyS8qkpmAA'
@@ -37,13 +38,14 @@ def authenticate():
     return reddit
 
 # Connect to the database and return a table
-def obtain_table():
+def obtain_database():
     # Connect to the database
     try:
         db = dataset.connect('sqlite:///rep.db')
     except Exception:
         print("There was a problem connecting to the database.")
-    return db['rep']
+    print("Connected to the database.")
+    return db
 
 # Obtain current value of poster reputation
 def get_rep(table, poster):
@@ -54,28 +56,34 @@ def get_rep(table, poster):
 
 
 # Add reputation to the poster in the database
-def add_rep(table, poster):
-    table.insert(dict(name=poster, rep = get_rep(table, poster) + 1))
+def add_rep(submission_table, reputation_table, comment):
+    taken = submission_table.find(comment.submission.id)
+    awardee = comment.submission.author.name
+    if taken is None:
+        reputation_table.insert(dict(name=awardee, rep = get_rep(reputation_table, awardee) + 1))
+        submission_table.insert(dict(name=comment.submission.id, used=True))
 
 def main():
     # Authenticate with Reddit and obtain a reddit instance
     reddit = authenticate()
 
-    # Obtain a table in the database
-    table = obtain_table()
+    # Connect to the database
+    db = obtain_database()
 
-# obtain name of poster
-# check if poster is in database
-# if not, create entry
-# if yes, update reputation with plus one
-# update the reddit flare with filler text and updated reputation
+    # Obtain a reputation table in the database
+    reputation_table = db['rep']
 
-    # Manage the reddit instance            
-    for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments():
+    # Obtain a submission tracker in the database
+    submission_table = db['sub']
+
+    # Manage the reddit instance   
+    print("Beginning stream...")         
+    for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments(skip_existing=True):
+        print("{}: {}".format(comment.author.name, comment.body))
         if comment.body in KEYWORDS:
             poster = comment.submission.author.name
-            add_rep(table, poster)
-            reddit.subreddit(SUBREDDIT_NAME).flair.set(poster, "{} {}".format(FILLER, get_rep(table, poster)))
+            add_rep(submission_table, reputation_table, comment)
+            reddit.subreddit(SUBREDDIT_NAME).flair.set(poster, "{}{}".format(FILLER, get_rep(reputation_table, poster)))
             
 
 # def getRep(username):
