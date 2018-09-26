@@ -51,7 +51,7 @@ def get_rep(table, poster):
     rep = table.find(name=poster)
     if rep is None:
         return 0
-    return int(rep['rep'])
+    return int(table[poster])
 
 
 # Add reputation to the poster in the database
@@ -81,10 +81,11 @@ def main():
     for comment in reddit.subreddit(SUBREDDIT_NAME).stream.comments(skip_existing=True):
         
         if comment.body in KEYWORDS:
-            print("{}: {}: {}".format(comment.author.name, comment.body, comment.submission.id))
+            print("Matching comment: {}: {}: {}".format(comment.author.name, comment.body, comment.submission.id))
             poster = comment.submission.author.name
             add_rep(submission_table, reputation_table, comment)
             reddit.subreddit(SUBREDDIT_NAME).flair.set(poster, "{}{}".format(FILLER, get_rep(reputation_table, poster)))
+            print("{}'s reputation updated to {}".format(poster, get_rep(reputation_table, poster)))
             
 if __name__ == "__main__":
     main()
