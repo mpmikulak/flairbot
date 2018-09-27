@@ -4,14 +4,14 @@ import praw
 import dataset
 
 # OAuth credentials
-CLIENT_ID = 'u2s7QyS8qkpmAA'
-CLIENT_SECRET = 'c1R5P5TRhNrx_6ZQG1cJK2NfB_s'
-USER_AGENT = 'flairbot'
+CLIENT_ID = ''
+CLIENT_SECRET = ''
+USER_AGENT = ''
 USERNAME = '' # Required to be in edit mode
 PASSWORD = '' # Required to be in edit mode
 
 # SubReddit info
-SUBREDDIT_NAME = 'funny'
+SUBREDDIT_NAME = ''
 
 # Keywords that will increase reputation
 KEYWORDS = ('+1')
