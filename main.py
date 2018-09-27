@@ -6,7 +6,7 @@ import dataset
 # OAuth credentials
 CLIENT_ID = ''
 CLIENT_SECRET = ''
-USER_AGENT = ''
+USER_AGENT = 'flairbot by /u/mpmikulak'
 USERNAME = '' # Required to be in edit mode
 PASSWORD = '' # Required to be in edit mode
 
