@@ -5,9 +5,9 @@ import dataset
 import datetime
 
 # OAuth credentials
-CLIENT_ID = 'u2s7QyS8qkpmAA'
-CLIENT_SECRET = 'c1R5P5TRhNrx_6ZQG1cJK2NfB_s'
-USER_AGENT = 'flairbot'
+CLIENT_ID = ''
+CLIENT_SECRET = ''
+USER_AGENT = ''
 USERNAME = '' # Required to be in edit mode
 PASSWORD = '' # Required to be in edit mode
 
@@ -61,6 +61,7 @@ def add_reputation(awardee, reputation_table):
     else:
         reputation_table.update(dict(name=awardee, reputation=rep+1), ['name'])
 
+# Inserts the submission into the table so it can't be used again
 def make_taken(submission_id, sub_table):
     sub_table.insert(dict(submission_id=submission_id, taken=True))
 
@@ -87,23 +88,10 @@ def main():
 
                 subreddit = reddit.subreddit(comment.subreddit.display_name)
                 new_rep = get_reputation(rep_table, awardee)
+                
                 subreddit.flair.set(awardee, "{}{}".format(FILLER, new_rep)) # Apply the flair
-                subreddit.reply("Congradulations, your new reputation is now {}".format(new_rep))
-                print("{}'s reputation updated to {}".format(awardee, new_rep))
-
-
-
-    # user = rep_table.find_one(name="mike")
-    # if user is None:
-    #     print("Inserted into database")
-    #     rep_table.insert(dict(name="mike", reputation=1))
-
-    # print("Old reputation:", get_reputation("mike",rep_table))
-
-    # add_reputation('mike', rep_table)
-    # print("New reputation:", get_reputation("mike",rep_table))
-
-
+                subreddit.reply("Congradulations, your new reputation is now {}".format(new_rep)) # Reply to the OP informing them of their new status
+                print("{}'s reputation updated to {}".format(awardee, new_rep)) # Console output
 
 if __name__ == '__main__':
     main()
