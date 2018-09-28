@@ -13,8 +13,8 @@ PASSWORD = '' # Required to be in edit mode
 
 # Subreddt info
 SUBREDDIT_NAMES = "" # String separated by "+" eg. "funny+all"
-KEYWORDS = ("+1") # Strings separated by a comma eg. ("+1", "up yours")
-FILLER = ""
+KEYWORDS = ("+1") # Tuple containing strings separated by a comma eg. ("+1", "up yours")
+FILLER = "" # Anything you want to proceed the reputation value
 
 # Returns an authorized instance of reddit
 def authenticate_reddit(client_id, client_secret, user_agent, username, password):
@@ -88,7 +88,7 @@ def main():
 
                 subreddit = reddit.subreddit(comment.subreddit.display_name)
                 new_rep = get_reputation(rep_table, awardee)
-                
+
                 subreddit.flair.set(awardee, "{}{}".format(FILLER, new_rep)) # Apply the flair
                 subreddit.reply("Congradulations, your new reputation is now {}".format(new_rep)) # Reply to the OP informing them of their new status
                 print("{}'s reputation updated to {}".format(awardee, new_rep)) # Console output
